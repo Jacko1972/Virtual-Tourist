@@ -15,8 +15,11 @@
 		D768B2801FF2B0E9008CC29F /* PhotoInfo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B27C1FF2B0E9008CC29F /* PhotoInfo+CoreDataProperties.swift */; };
 		D768B2841FF2B177008CC29F /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B2821FF2B177008CC29F /* CoreDataStack.swift */; };
 		D768B2851FF2B177008CC29F /* CoreDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B2831FF2B177008CC29F /* CoreDataTableViewController.swift */; };
+		D768B2891FF2B4FB008CC29F /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B2881FF2B4FB008CC29F /* MapViewController.swift */; };
+		D768B28B1FF3183E008CC29F /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B28A1FF3183E008CC29F /* Reachability.swift */; };
+		D768B28E1FF31854008CC29F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D768B28D1FF31854008CC29F /* MapKit.framework */; };
+		D768B2901FF3185C008CC29F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D768B28F1FF3185C008CC29F /* SystemConfiguration.framework */; };
 		D7CF73F01FEFBF590021C31B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CF73EF1FEFBF590021C31B /* AppDelegate.swift */; };
-		D7CF73F21FEFBF590021C31B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CF73F11FEFBF590021C31B /* ViewController.swift */; };
 		D7CF73F51FEFBF590021C31B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7CF73F31FEFBF590021C31B /* Main.storyboard */; };
 		D7CF73F71FEFBF590021C31B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D7CF73F61FEFBF590021C31B /* Assets.xcassets */; };
 		D7CF73FA1FEFBF590021C31B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7CF73F81FEFBF590021C31B /* LaunchScreen.storyboard */; };
@@ -32,9 +35,12 @@
 		D768B27C1FF2B0E9008CC29F /* PhotoInfo+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotoInfo+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		D768B2821FF2B177008CC29F /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		D768B2831FF2B177008CC29F /* CoreDataTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataTableViewController.swift; sourceTree = "<group>"; };
+		D768B2881FF2B4FB008CC29F /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		D768B28A1FF3183E008CC29F /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		D768B28D1FF31854008CC29F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		D768B28F1FF3185C008CC29F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D7CF73EC1FEFBF590021C31B /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CF73EF1FEFBF590021C31B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D7CF73F11FEFBF590021C31B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		D7CF73F41FEFBF590021C31B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D7CF73F61FEFBF590021C31B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7CF73F91FEFBF590021C31B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +53,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D768B2901FF3185C008CC29F /* SystemConfiguration.framework in Frameworks */,
+				D768B28E1FF31854008CC29F /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +77,7 @@
 		D768B2861FF2B189008CC29F /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				D768B2881FF2B4FB008CC29F /* MapViewController.swift */,
 				D768B2831FF2B177008CC29F /* CoreDataTableViewController.swift */,
 			);
 			path = Controllers;
@@ -84,11 +93,32 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		D768B28C1FF31853008CC29F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D768B28F1FF3185C008CC29F /* SystemConfiguration.framework */,
+				D768B28D1FF31854008CC29F /* MapKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D768B2911FF31898008CC29F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D7CF73FB1FEFBF590021C31B /* Info.plist */,
+				D7CF74011FEFC77D0021C31B /* Constants.swift */,
+				D768B25B1FF2AA97008CC29F /* DataStructures.swift */,
+				D768B28A1FF3183E008CC29F /* Reachability.swift */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		D7CF73E31FEFBF590021C31B = {
 			isa = PBXGroup;
 			children = (
 				D7CF73EE1FEFBF590021C31B /* VirtualTourist */,
 				D7CF73ED1FEFBF590021C31B /* Products */,
+				D768B28C1FF31853008CC29F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,13 +134,10 @@
 			isa = PBXGroup;
 			children = (
 				D7CF73EF1FEFBF590021C31B /* AppDelegate.swift */,
-				D7CF73F11FEFBF590021C31B /* ViewController.swift */,
 				D768B2871FF2B1B2008CC29F /* Assets */,
 				D768B2861FF2B189008CC29F /* Controllers */,
 				D768B2811FF2B13C008CC29F /* Models */,
-				D7CF73FB1FEFBF590021C31B /* Info.plist */,
-				D7CF74011FEFC77D0021C31B /* Constants.swift */,
-				D768B25B1FF2AA97008CC29F /* DataStructures.swift */,
+				D768B2911FF31898008CC29F /* Supporting Files */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -148,6 +175,11 @@
 					D7CF73EB1FEFBF590021C31B = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -187,10 +219,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D768B2891FF2B4FB008CC29F /* MapViewController.swift in Sources */,
 				D768B25A1FF2A79A008CC29F /* VirtualTourist.xcdatamodeld in Sources */,
+				D768B28B1FF3183E008CC29F /* Reachability.swift in Sources */,
 				D768B25C1FF2AA97008CC29F /* DataStructures.swift in Sources */,
 				D768B27F1FF2B0E9008CC29F /* PhotoInfo+CoreDataClass.swift in Sources */,
-				D7CF73F21FEFBF590021C31B /* ViewController.swift in Sources */,
 				D768B27E1FF2B0E9008CC29F /* Pin+CoreDataProperties.swift in Sources */,
 				D768B2841FF2B177008CC29F /* CoreDataStack.swift in Sources */,
 				D768B27D1FF2B0E9008CC29F /* Pin+CoreDataClass.swift in Sources */,
