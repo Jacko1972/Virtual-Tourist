@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D752B91F1FF42C2A00C5D72B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D752B91E1FF42C2A00C5D72B /* Extensions.swift */; };
+		D752B9211FF42F6B00C5D72B /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D752B9201FF42F6B00C5D72B /* CollectionViewController.swift */; };
 		D768B25A1FF2A79A008CC29F /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D768B2581FF2A79A008CC29F /* VirtualTourist.xcdatamodeld */; };
 		D768B25C1FF2AA97008CC29F /* DataStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B25B1FF2AA97008CC29F /* DataStructures.swift */; };
 		D768B27D1FF2B0E9008CC29F /* Pin+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B2791FF2B0E9008CC29F /* Pin+CoreDataClass.swift */; };
@@ -14,7 +16,6 @@
 		D768B27F1FF2B0E9008CC29F /* PhotoInfo+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B27B1FF2B0E9008CC29F /* PhotoInfo+CoreDataClass.swift */; };
 		D768B2801FF2B0E9008CC29F /* PhotoInfo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B27C1FF2B0E9008CC29F /* PhotoInfo+CoreDataProperties.swift */; };
 		D768B2841FF2B177008CC29F /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B2821FF2B177008CC29F /* CoreDataStack.swift */; };
-		D768B2851FF2B177008CC29F /* CoreDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B2831FF2B177008CC29F /* CoreDataTableViewController.swift */; };
 		D768B2891FF2B4FB008CC29F /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B2881FF2B4FB008CC29F /* MapViewController.swift */; };
 		D768B28B1FF3183E008CC29F /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B28A1FF3183E008CC29F /* Reachability.swift */; };
 		D768B28E1FF31854008CC29F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D768B28D1FF31854008CC29F /* MapKit.framework */; };
@@ -27,6 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D752B91E1FF42C2A00C5D72B /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		D752B9201FF42F6B00C5D72B /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		D768B2591FF2A79A008CC29F /* VirtualTourist.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VirtualTourist.xcdatamodel; sourceTree = "<group>"; };
 		D768B25B1FF2AA97008CC29F /* DataStructures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructures.swift; sourceTree = "<group>"; };
 		D768B2791FF2B0E9008CC29F /* Pin+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pin+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -34,7 +37,6 @@
 		D768B27B1FF2B0E9008CC29F /* PhotoInfo+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotoInfo+CoreDataClass.swift"; sourceTree = "<group>"; };
 		D768B27C1FF2B0E9008CC29F /* PhotoInfo+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotoInfo+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		D768B2821FF2B177008CC29F /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
-		D768B2831FF2B177008CC29F /* CoreDataTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataTableViewController.swift; sourceTree = "<group>"; };
 		D768B2881FF2B4FB008CC29F /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		D768B28A1FF3183E008CC29F /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		D768B28D1FF31854008CC29F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -78,7 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				D768B2881FF2B4FB008CC29F /* MapViewController.swift */,
-				D768B2831FF2B177008CC29F /* CoreDataTableViewController.swift */,
+				D752B9201FF42F6B00C5D72B /* CollectionViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -105,10 +107,10 @@
 		D768B2911FF31898008CC29F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				D7CF73FB1FEFBF590021C31B /* Info.plist */,
 				D7CF74011FEFC77D0021C31B /* Constants.swift */,
 				D768B25B1FF2AA97008CC29F /* DataStructures.swift */,
 				D768B28A1FF3183E008CC29F /* Reachability.swift */,
+				D752B91E1FF42C2A00C5D72B /* Extensions.swift */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
@@ -133,6 +135,7 @@
 		D7CF73EE1FEFBF590021C31B /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				D7CF73FB1FEFBF590021C31B /* Info.plist */,
 				D7CF73EF1FEFBF590021C31B /* AppDelegate.swift */,
 				D768B2871FF2B1B2008CC29F /* Assets */,
 				D768B2861FF2B189008CC29F /* Controllers */,
@@ -223,14 +226,15 @@
 				D768B25A1FF2A79A008CC29F /* VirtualTourist.xcdatamodeld in Sources */,
 				D768B28B1FF3183E008CC29F /* Reachability.swift in Sources */,
 				D768B25C1FF2AA97008CC29F /* DataStructures.swift in Sources */,
+				D752B9211FF42F6B00C5D72B /* CollectionViewController.swift in Sources */,
 				D768B27F1FF2B0E9008CC29F /* PhotoInfo+CoreDataClass.swift in Sources */,
 				D768B27E1FF2B0E9008CC29F /* Pin+CoreDataProperties.swift in Sources */,
 				D768B2841FF2B177008CC29F /* CoreDataStack.swift in Sources */,
 				D768B27D1FF2B0E9008CC29F /* Pin+CoreDataClass.swift in Sources */,
+				D752B91F1FF42C2A00C5D72B /* Extensions.swift in Sources */,
 				D7CF73F01FEFBF590021C31B /* AppDelegate.swift in Sources */,
 				D7CF74021FEFC77D0021C31B /* Constants.swift in Sources */,
 				D768B2801FF2B0E9008CC29F /* PhotoInfo+CoreDataProperties.swift in Sources */,
-				D768B2851FF2B177008CC29F /* CoreDataTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
