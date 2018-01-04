@@ -2,8 +2,8 @@
 //  Pin+CoreDataProperties.swift
 //  VirtualTourist
 //
-//  Created by Andrew Jackson on 26/12/2017.
-//  Copyright © 2017 Jacko1972. All rights reserved.
+//  Created by Andrew Jackson on 04/01/2018.
+//  Copyright © 2018 Jacko1972. All rights reserved.
 //
 //
 
@@ -19,6 +19,8 @@ extension Pin {
 
     @NSManaged public var latitude: Double
     @NSManaged public var longitude: Double
+    @NSManaged public var name: String?
+    @NSManaged public var pinDate: String?
     @NSManaged public var photoInfos: NSSet?
 
 }

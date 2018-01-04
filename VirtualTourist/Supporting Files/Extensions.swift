@@ -18,11 +18,16 @@ extension UIViewController {
     }
 }
 
-public extension String {
-    public var isValidEmail: Bool {
-        return matches(pattern: "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
+extension UserDefaults {
+    
+    enum Keys {
+        
+        static let HasRun = "hasRun"
+        static let Latitude = "latitude"
+        static let Longitude = "longitude"
+        static let LatitudeDelta = "latitudeDelta"
+        static let LongitudeDelta = "longitudeDelta"
+        
     }
-    public func matches(pattern: String) -> Bool {
-        return range(of: pattern, options: String.CompareOptions.regularExpression, range: nil, locale: nil) != nil
-    }
+    
 }

@@ -11,14 +11,35 @@ import MapKit
 import CoreData
 
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate {
+    @IBOutlet var deleteButton: UIBarButtonItem!
     
     @IBOutlet var mapView: MKMapView!
     let locationManager = CLLocationManager()
+    let delegate = UIApplication.shared.delegate as! AppDelegate
+    var pointAnnotations = [MKPointAnnotation]()
+    let defaults = UserDefaults.standard
+    var seguePin: Pin!
     
+    @IBAction func deletePinAction(_ sender: UIBarButtonItem) {
+        let ann = mapView.selectedAnnotations[0]
+        guard let title = ann.title, let pinDate = ann.subtitle else {
+            displayAlert(title: "Missing Information", msg: "Unable to find Pin in Data Source!")
+            return
+        }
+        let pin = pinFromAnnotation(name: title!, pinDate: pinDate!, latitude: ann.coordinate.latitude, longitude: ann.coordinate.longitude)
+        if pin != nil {
+            delegate.stack.context.delete(pin!)
+            delegate.stack.save()
+        }
+        mapView.removeAnnotation(ann)
+        displayAlert(title: "Pin Removed", msg: "And there it was, gone!!")
+        deleteButton.isEnabled = false
+    }
     
     func checkLocationAuthorizationStatus() {
         if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
             mapView.showsUserLocation = true
+            loadAnnotations()
         } else {
             locationManager.requestWhenInUseAuthorization()
         }
@@ -26,21 +47,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status == CLAuthorizationStatus.authorizedWhenInUse {
-            
+            loadAnnotations()
         }
-    }
-    
-    var fetchedResultsController : NSFetchedResultsController<NSFetchRequestResult> {
-        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let stack = delegate.stack
-        let _fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
-        do {
-            _fetchedResultsController.performFetch()
-        } catch {
-            displayAlert(title: "Pin Fetch Failed", msg: "Unable to search for Pins in data source")
-        }
-        return _fetchedResultsController
     }
     
     override func viewDidLoad() {
@@ -53,9 +61,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        mapView.removeAnnotations(mapView.annotations)
         checkLocationAuthorizationStatus()
+        setMapFromUserDefaults()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -65,54 +75,142 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         if annotation is MKUserLocation {
             return nil
         }
-        var onTheMapPin = mapView.dequeueReusableAnnotationView(withIdentifier: "VirtualTouristPin") as? MKPinAnnotationView
-        if onTheMapPin == nil {
-            onTheMapPin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "VirtualTouristPin")
-            onTheMapPin!.canShowCallout = false
-            onTheMapPin!.pinTintColor = UIColor.red
+        var pin = mapView.dequeueReusableAnnotationView(withIdentifier: "VirtualTouristPin") as? MKPinAnnotationView
+        if pin == nil {
+            pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "VirtualTouristPin")
+            pin!.canShowCallout = true
+            pin!.pinTintColor = UIColor.red
+            pin!.rightCalloutAccessoryView = UIButton(type: UIButtonType.detailDisclosure)
         }
-        return onTheMapPin
+        return pin
     }
-
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        deleteButton.isEnabled = true
+    }
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        deleteButton.isEnabled = false
+    }
+    
     @objc func addAnnotationAction(gestureRecognizer:UIGestureRecognizer) {
-        let touchPoint = gestureRecognizer.location(in: mapView)
-        let newCoordinates = mapView.convert(touchPoint, toCoordinateFrom: mapView)
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = newCoordinates
-        mapView.addAnnotation(annotation)
+        if gestureRecognizer.state == .began {
+            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+            let touchPoint = gestureRecognizer.location(in: mapView)
+            let newCoords = mapView.convert(touchPoint, toCoordinateFrom: mapView)
+            VirtualTouristClient.instance.getLocalSearchLocationFromCoordinates(newCoords) { (response, error) in
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                if error != nil {
+                    self.displayAlert(title: "Could Not Find Name", msg: "Geocoder could not find a name for dropped pin location.")
+                    return
+                }
+                guard let resp = response else {
+                    self.displayAlert(title: "Missing Locations", msg: "We were unable to find a location name.")
+                    return
+                }
+                var name = "Collection"
+                if resp.name != nil {
+                    name = resp.name!
+                }
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = newCoords
+                let formatter = DateFormatter()
+                formatter.timeStyle = .short
+                formatter.dateStyle = .medium
+                formatter.locale = Locale.current
+                let pinDate = formatter.string(from: Date())
+                annotation.title = name
+                annotation.subtitle = pinDate
+                self.mapView.addAnnotation(annotation)
+                self.pointAnnotations.append(annotation)
+                let pin = Pin(latitude: newCoords.latitude, longitude: newCoords.longitude, name: name, pinDate: pinDate, context: self.delegate.stack.context)
+                self.delegate.stack.save()
+                VirtualTouristClient.instance.pin = pin
+                VirtualTouristClient.instance.fetchPhotoInfoInTheBackground()
+                print(pin)
+            }
+        }
+    }
+    
+    func setMapFromUserDefaults() {
+        let hasRun = defaults.bool(forKey: UserDefaults.Keys.HasRun)
+        let latitude = hasRun ? defaults.double(forKey: UserDefaults.Keys.Latitude) : 54.5
+        let longitude = hasRun ? defaults.double(forKey: UserDefaults.Keys.Longitude) : -3.5
+        let latitudeDelta = hasRun ? defaults.double(forKey: UserDefaults.Keys.LatitudeDelta) : 10
+        let longitudeDelta = hasRun ? defaults.double(forKey: UserDefaults.Keys.LongitudeDelta) : 10
+        let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+        let region = MKCoordinateRegion(center: center, span: span)
+        mapView.setRegion(region, animated: true)
+    }
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        defaults.set(true, forKey: UserDefaults.Keys.HasRun)
+        defaults.set(mapView.centerCoordinate.latitude, forKey: UserDefaults.Keys.Latitude)
+        defaults.set(mapView.centerCoordinate.longitude, forKey: UserDefaults.Keys.Longitude)
+        defaults.set(mapView.region.span.latitudeDelta, forKey: UserDefaults.Keys.LatitudeDelta)
+        defaults.set(mapView.region.span.longitudeDelta, forKey: UserDefaults.Keys.LongitudeDelta)
     }
     
     func loadAnnotations() {
-        if fetchedResultsController.fetchedObjects?.count > 0 {
-            for record in fetchedResultsController.fetchedObjects {
-                let location = CLLocationCoordinate2D(latitude: record.latitude!, longitude: record.longitude!)
-                let annotation = MKPointAnnotation()
-                annotation.coordinate = location
-                annotation.title = record.getFullName()
-                annotation.subtitle = record.mediaURL
-                pointAnnotations.append(annotation)
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        do {
+            if let mapPins = try? delegate.stack.context.fetch(fr) as! [Pin] {
+                for pin in mapPins {
+                    let location = CLLocationCoordinate2D(latitude: pin.latitude, longitude: pin.longitude)
+                    let annotation = MKPointAnnotation()
+                    annotation.coordinate = location
+                    annotation.title = pin.name
+                    annotation.subtitle = pin.pinDate
+                    pointAnnotations.append(annotation)
+                }
+            } else {
+                displayAlert(title: "No Pins Stored!", msg: "No Pins to display, long click on Map to create a Pin.")
             }
-        } else {
-            displayAlert(title: "No Data!", msg: "No locations have been retrieved from the app to display!")
         }
         if pointAnnotations.count > 0 {
             mapView.addAnnotations(pointAnnotations)
         }
-        if mapView.userLocation.location == nil {
-            setRegion(center: CLLocationCoordinate2D(latitude: pointAnnotations[0].coordinate.latitude, longitude: pointAnnotations[0].coordinate.longitude))
-        } else {
-            setRegion(center: CLLocationCoordinate2D(latitude: mapView.userLocation.coordinate.latitude, longitude: mapView.userLocation.coordinate.longitude))
-        }
     }
     
-    /*
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        guard let pin = view.annotation as? MKPointAnnotation else {
+            return
+        }
+        seguePin = pinFromAnnotation(name: pin.title!, pinDate: pin.subtitle!, latitude: pin.coordinate.latitude, longitude: pin.coordinate.longitude)
+        performSegue(withIdentifier: "ShowCollectionView", sender: seguePin)
+    }
+    
+    func pinFromAnnotation(name: String, pinDate: String, latitude: Double, longitude: Double) -> Pin?{
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        let latPredicate = NSPredicate(format: "latitude == %lf", latitude)
+        let longPredicate = NSPredicate(format: "longitude == %lf", longitude)
+        let titlePredicate = NSPredicate(format: "name == %@", name)
+        let pinDatePredicate = NSPredicate(format: "pinDate == %@", pinDate)
+        
+        fr.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [latPredicate, longPredicate, titlePredicate, pinDatePredicate])
+        fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        do {
+            if let mapPins = try? delegate.stack.context.fetch(fr) as! [Pin] {
+                return mapPins[0]
+            }
+        }
+        return nil
+    }
+    
     // MARK: - Navigation
-
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        if segue.identifier == "ShowCollectionView", seguePin != nil {
+            if let controller = segue.destination as? CollectionViewController {
+                controller.pin = seguePin
+                controller.title = seguePin.name
+            }
+        }
     }
-    */
-
+    
+    
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="liD-03-9ep">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Map View Controller-->
+        <!--Virtual Tourist-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="MapViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="EfS-iE-U93">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -31,14 +31,23 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <navigationItem key="navigationItem" title="Virtual Tourist" id="Kgk-KG-yMB">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="mTd-Ra-I4p"/>
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="trash" id="TqU-8e-Cr4">
+                            <connections>
+                                <action selector="deletePinAction:" destination="BYZ-38-t0r" id="vSV-Ig-dje"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
-                        <outlet property="mapView" destination="8bC-Xf-vdC" id="tJo-5o-hr9"/>
+                        <outlet property="deleteButton" destination="TqU-8e-Cr4" id="YQr-3z-OJ7"/>
+                        <outlet property="mapView" destination="EfS-iE-U93" id="3ic-94-48b"/>
                         <segue destination="Zqg-Ii-OI1" kind="show" identifier="ShowCollectionView" id="oXm-cW-Kbu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-337" y="5"/>
+            <point key="canvasLocation" x="0.80000000000000004" y="4.9475262368815596"/>
         </scene>
         <!--Collection View Controller-->
         <scene sceneID="EMv-26-0B1">
@@ -49,13 +58,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1bm-yN-Bdj">
-                                <rect key="frame" x="0.0" y="20" width="375" height="200"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="200"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="KV3-X0-vfW"/>
                                 </constraints>
                             </mapView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="CTT-Q1-Eop">
-                                <rect key="frame" x="0.0" y="220" width="375" height="447"/>
+                                <rect key="frame" x="0.0" y="264" width="375" height="403"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="s1N-La-axc">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="368"/>
@@ -78,7 +87,7 @@
                                         </cells>
                                     </collectionView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="60P-Hj-FCd">
-                                        <rect key="frame" x="110" y="376" width="155" height="71"/>
+                                        <rect key="frame" x="110" y="376" width="155" height="27"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                         <state key="normal" title="Show Collection"/>
                                         <connections>
@@ -101,14 +110,33 @@
                         <viewLayoutGuide key="safeArea" id="hmY-na-P52"/>
                     </view>
                     <connections>
-                        <outlet property="collectionView" destination="s1N-La-axc" id="K9N-WE-Wam"/>
+                        <outlet property="collectionView" destination="s1N-La-axc" id="Ojv-GD-Z0D"/>
+                        <outlet property="flowLayout" destination="j1f-eg-GUm" id="xwV-dP-XoW"/>
                         <outlet property="mapView" destination="1bm-yN-Bdj" id="bU5-bA-RxP"/>
                         <outlet property="showCollection" destination="60P-Hj-FCd" id="MlG-o4-A9s"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Saa-yO-JGn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="632.79999999999995" y="4.9475262368815596"/>
+            <point key="canvasLocation" x="972" y="4.9475262368815596"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="7iZ-zr-Unh">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="liD-03-9ep" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="4Ph-eG-lHZ">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="zP8-Eh-QVy"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JY7-GD-vym" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-750" y="5"/>
         </scene>
     </scenes>
 </document>

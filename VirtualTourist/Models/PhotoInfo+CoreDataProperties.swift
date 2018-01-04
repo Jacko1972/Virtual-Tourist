@@ -2,8 +2,8 @@
 //  PhotoInfo+CoreDataProperties.swift
 //  VirtualTourist
 //
-//  Created by Andrew Jackson on 26/12/2017.
-//  Copyright © 2017 Jacko1972. All rights reserved.
+//  Created by Andrew Jackson on 04/01/2018.
+//  Copyright © 2018 Jacko1972. All rights reserved.
 //
 //
 
@@ -17,12 +17,8 @@ extension PhotoInfo {
         return NSFetchRequest<PhotoInfo>(entityName: "PhotoInfo")
     }
 
-    @NSManaged public var id: String?
-    @NSManaged public var owner: String?
-    @NSManaged public var secret: String?
-    @NSManaged public var server: String?
-    @NSManaged public var farm: Int16
-    @NSManaged public var title: String?
+    @NSManaged public var url: String?
+    @NSManaged public var imageData: NSData?
     @NSManaged public var pin: Pin?
 
 }
