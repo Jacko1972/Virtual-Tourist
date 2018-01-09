@@ -74,7 +74,6 @@ class VirtualTouristClient {
     }
     
     private func fetchPhotosInTheBackground(_ pages: Int) {
-        print("fetchPhotos In the background: \(pages)")
         var params = getDefaultParameters()
         params[Constants.FlickrParameterKeys.Page] = pages as Any
         let url = flickrURLFromParameters(params)
@@ -102,8 +101,7 @@ class VirtualTouristClient {
                     self.downloadImageData(photoInfos: photoInfos)
                 }
                 self.delegate.stack.save()
-            } catch let error2 {
-                print("error 4 \(error2)")
+            } catch {
                 return
             }
         }
@@ -111,7 +109,6 @@ class VirtualTouristClient {
     }
     
     func downloadImageData(photoInfos: [PhotoInfo]) {
-        print("downloadImageData In the background")
         for photoInfo in photoInfos {
             let url = URL(string: photoInfo.url!)
             let request = URLRequest(url: url!)
@@ -137,40 +134,40 @@ class VirtualTouristClient {
         }
     }
     
-    func downloadImageData(photoInfo: PhotoInfo, handler: @escaping (_ downloaded: Bool, _ error: Error?) -> Void) {
-        let url = URL(string: photoInfo.url!)
-        let request = URLRequest(url: url!)
-        let session = URLSession.shared
-        
-        if photoInfo.imageData != nil {
-            print("not null")
-            handler(true, nil)
-            return
-        }
-        
-        let task = session.dataTask(with: request) { data, response, error in
-            func sendError(_ error: String) {
-                let userInfo = [NSLocalizedDescriptionKey : error]
-                handler(false, NSError(domain: "Image Data Download", code: 1, userInfo: userInfo))
-            }
-            if error != nil {
-                sendError("Download Task returned with: \(String(describing: error?.localizedDescription))")
-                return
-            }
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-                sendError("Download Status Code: \(String(describing: error?.localizedDescription))")
-                return
-            }
-            guard let data = data else {
-                sendError("Download returned no Data!")
-                return
-            }
-            photoInfo.imageData = data as NSData
-            self.delegate.stack.save()
-            handler(true, nil)
-        }
-        task.resume()
-    }
+//    func downloadImageData(photoInfo: PhotoInfo, handler: @escaping (_ downloaded: Bool, _ error: Error?) -> Void) {
+//        let url = URL(string: photoInfo.url!)
+//        let request = URLRequest(url: url!)
+//        let session = URLSession.shared
+//
+//        if photoInfo.imageData != nil {
+//            print("not null")
+//            handler(true, nil)
+//            return
+//        }
+//
+//        let task = session.dataTask(with: request) { data, response, error in
+//            func sendError(_ error: String) {
+//                let userInfo = [NSLocalizedDescriptionKey : error]
+//                handler(false, NSError(domain: "Image Data Download", code: 1, userInfo: userInfo))
+//            }
+//            if error != nil {
+//                sendError("Download Task returned with: \(String(describing: error?.localizedDescription))")
+//                return
+//            }
+//            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+//                sendError("Download Status Code: \(String(describing: error?.localizedDescription))")
+//                return
+//            }
+//            guard let data = data else {
+//                sendError("Download returned no Data!")
+//                return
+//            }
+//            photoInfo.imageData = data as NSData
+//            self.delegate.stack.save()
+//            handler(true, nil)
+//        }
+//        task.resume()
+//    }
     
     func fetchPhotoInfo(handler: @escaping (_ pages: Int, _ error: Error?) -> Void) {
         let params = getDefaultParameters()
@@ -214,11 +211,9 @@ class VirtualTouristClient {
     }
     
     func fetchPhotos(_ pages: Int, handler: @escaping (_ success: Bool, _ error: Error?) -> Void) {
-        print("fetchPhotos: \(pages)")
         var params = getDefaultParameters()
         params[Constants.FlickrParameterKeys.Page] = pages as Any
         let url = flickrURLFromParameters(params)
-        print("\(url)")
         let request = URLRequest(url: url)
         let session = URLSession.shared
         

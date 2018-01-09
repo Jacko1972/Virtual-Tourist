@@ -19,15 +19,11 @@ extension UIViewController {
 }
 
 extension UserDefaults {
-    
     enum Keys {
-        
         static let HasRun = "hasRun"
         static let Latitude = "latitude"
         static let Longitude = "longitude"
         static let LatitudeDelta = "latitudeDelta"
         static let LongitudeDelta = "longitudeDelta"
-        
     }
-    
 }

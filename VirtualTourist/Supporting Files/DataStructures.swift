@@ -4,7 +4,6 @@
 //
 //  Created by Andrew Jackson on 26/12/2017.
 //  Copyright © 2017 Jacko1972. All rights reserved.
-//
 
 struct PagedPhotos: Codable {
     let photos: Photos

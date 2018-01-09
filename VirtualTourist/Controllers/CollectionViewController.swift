@@ -4,7 +4,6 @@
 //
 //  Created by Andrew Jackson on 27/12/2017.
 //  Copyright © 2017 Jacko1972. All rights reserved.
-//
 
 import UIKit
 import MapKit
@@ -106,7 +105,6 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
         plotPinOnMapView()
         setUpCollectionViewLayout(width: view.bounds.size.width)
         subscribeToNotifications()
-        print("viewDidLoad")
     }
     
     override func viewWillAppear(_ animated: Bool) {

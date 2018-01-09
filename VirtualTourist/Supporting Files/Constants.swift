@@ -10,21 +10,6 @@ import Foundation
 
 class Constants {
     
-//    class Flickr {
-//
-//        let api = "a355ab30f692957dbdfbfcfbbb889d1f"
-//        let secret = "44cee23754c62664"
-//        let address = "https://api.flickr.com/services/rest/?"
-//        let api_key = "api_key=a355ab30f692957dbdfbfcfbbb889d1f"
-//        let method = "method=flickr.photos.search"
-//        let format = "format=json&nojsoncallback=1"
-//
-//        func requestUrl() -> URL {
-//            let url : URL = URL(string: "\(address)\(api_key)&\(method)&\(format)")!
-//            return url
-//        }
-//    }
-    
     struct AppStrings {
         static let EmptyCollectionView = "No Images Available!\nClick Back to select another Location!"
         static let BlankString = "Blank Message"

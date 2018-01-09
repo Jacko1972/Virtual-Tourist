@@ -84,38 +84,38 @@ struct CoreDataStack {
 
 // MARK: - CoreDataStack (Removing Data)
 
-internal extension CoreDataStack  {
-    
-    func dropAllData() throws {
-        // delete all the objects in the db. This won't delete the files, it will
-        // just leave empty tables.
-        try coordinator.destroyPersistentStore(at: dbURL, ofType: NSSQLiteStoreType , options: nil)
-        try addStoreCoordinator(NSSQLiteStoreType, configuration: nil, storeURL: dbURL, options: nil)
-    }
-}
+//internal extension CoreDataStack  {
+//    
+//    func dropAllData() throws {
+//        // delete all the objects in the db. This won't delete the files, it will
+//        // just leave empty tables.
+//        try coordinator.destroyPersistentStore(at: dbURL, ofType: NSSQLiteStoreType , options: nil)
+//        try addStoreCoordinator(NSSQLiteStoreType, configuration: nil, storeURL: dbURL, options: nil)
+//    }
+//}
 
 // MARK: - CoreDataStack (Batch Processing in the Background)
 
-extension CoreDataStack {
-    
-    typealias Batch = (_ workerContext: NSManagedObjectContext) -> ()
-    
-    func performBackgroundBatchOperation(_ batch: @escaping Batch) {
-        
-        backgroundContext.perform() {
-            
-            batch(self.backgroundContext)
-            
-            // Save it to the parent context, so normal saving
-            // can work
-            do {
-                try self.backgroundContext.save()
-            } catch {
-                fatalError("Error while saving backgroundContext: \(error)")
-            }
-        }
-    }
-}
+//extension CoreDataStack {
+//
+//    typealias Batch = (_ workerContext: NSManagedObjectContext) -> ()
+//
+//    func performBackgroundBatchOperation(_ batch: @escaping Batch) {
+//
+//        backgroundContext.perform() {
+//
+//            batch(self.backgroundContext)
+//
+//            // Save it to the parent context, so normal saving
+//            // can work
+//            do {
+//                try self.backgroundContext.save()
+//            } catch {
+//                fatalError("Error while saving backgroundContext: \(error)")
+//            }
+//        }
+//    }
+//}
 
 // MARK: - CoreDataStack (Save Data)
 
@@ -148,22 +148,22 @@ extension CoreDataStack {
         }
     }
     
-    func autoSave(_ delayInSeconds : Int) {
-        
-        if delayInSeconds > 0 {
-            do {
-                try self.context.save()
-                print("Autosaving")
-            } catch {
-                print("Error while autosaving")
-            }
-            
-            let delayInNanoSeconds = UInt64(delayInSeconds) * NSEC_PER_SEC
-            let time = DispatchTime.now() + Double(Int64(delayInNanoSeconds)) / Double(NSEC_PER_SEC)
-            
-            DispatchQueue.main.asyncAfter(deadline: time) {
-                self.autoSave(delayInSeconds)
-            }
-        }
-    }
+//    func autoSave(_ delayInSeconds : Int) {
+//
+//        if delayInSeconds > 0 {
+//            do {
+//                try self.context.save()
+//                print("Autosaving")
+//            } catch {
+//                print("Error while autosaving")
+//            }
+//
+//            let delayInNanoSeconds = UInt64(delayInSeconds) * NSEC_PER_SEC
+//            let time = DispatchTime.now() + Double(Int64(delayInNanoSeconds)) / Double(NSEC_PER_SEC)
+//
+//            DispatchQueue.main.asyncAfter(deadline: time) {
+//                self.autoSave(delayInSeconds)
+//            }
+//        }
+//    }
 }

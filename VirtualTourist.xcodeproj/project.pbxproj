@@ -21,7 +21,6 @@
 		D768B28B1FF3183E008CC29F /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768B28A1FF3183E008CC29F /* Reachability.swift */; };
 		D768B28E1FF31854008CC29F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D768B28D1FF31854008CC29F /* MapKit.framework */; };
 		D768B2901FF3185C008CC29F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D768B28F1FF3185C008CC29F /* SystemConfiguration.framework */; };
-		D77BC8D91FF54ACF006B28B6 /* CoreDataCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77BC8D81FF54ACF006B28B6 /* CoreDataCollectionViewController.swift */; };
 		D784BBA91FFECD590022BE20 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D784BBA81FFECD580022BE20 /* PhotoCollectionViewCell.swift */; };
 		D7CF73F01FEFBF590021C31B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CF73EF1FEFBF590021C31B /* AppDelegate.swift */; };
 		D7CF73F51FEFBF590021C31B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7CF73F31FEFBF590021C31B /* Main.storyboard */; };
@@ -45,7 +44,6 @@
 		D768B28A1FF3183E008CC29F /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		D768B28D1FF31854008CC29F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		D768B28F1FF3185C008CC29F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		D77BC8D81FF54ACF006B28B6 /* CoreDataCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataCollectionViewController.swift; sourceTree = "<group>"; };
 		D784BBA81FFECD580022BE20 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		D7CF73EC1FEFBF590021C31B /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CF73EF1FEFBF590021C31B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -87,7 +85,6 @@
 			children = (
 				D768B2881FF2B4FB008CC29F /* MapViewController.swift */,
 				D752B9201FF42F6B00C5D72B /* CollectionViewController.swift */,
-				D77BC8D81FF54ACF006B28B6 /* CoreDataCollectionViewController.swift */,
 				D784BBA81FFECD580022BE20 /* PhotoCollectionViewCell.swift */,
 			);
 			path = Controllers;
@@ -242,7 +239,6 @@
 				D768B2841FF2B177008CC29F /* CoreDataStack.swift in Sources */,
 				D784BBA91FFECD590022BE20 /* PhotoCollectionViewCell.swift in Sources */,
 				D768B27D1FF2B0E9008CC29F /* Pin+CoreDataClass.swift in Sources */,
-				D77BC8D91FF54ACF006B28B6 /* CoreDataCollectionViewController.swift in Sources */,
 				D752B91F1FF42C2A00C5D72B /* Extensions.swift in Sources */,
 				D7CF73F01FEFBF590021C31B /* AppDelegate.swift in Sources */,
 				D7CF74021FEFC77D0021C31B /* Constants.swift in Sources */,

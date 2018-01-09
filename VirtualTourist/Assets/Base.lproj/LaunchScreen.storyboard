@@ -53,7 +53,7 @@
                                 <variation key="heightClass=compact-widthClass=compact" constant="10"/>
                             </constraint>
                             <constraint firstItem="FsZ-r2-8aM" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="rBc-i9-X5A"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Yt4-De-jAA" secondAttribute="trailing" id="vEz-uc-ape"/>
+                            <constraint firstItem="Yt4-De-jAA" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="vEz-uc-ape"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
