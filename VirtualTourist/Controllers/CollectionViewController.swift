@@ -19,19 +19,10 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
     
     var pin: Pin!
     let delegate = UIApplication.shared.delegate as! AppDelegate
-    var fetchingPhotoInfo = [PhotoInfo]() {
-        didSet {
-            print("\(fetchingPhotoInfo.count)")
-            if fetchingPhotoInfo.count == 0 {
-                updateUIForNetworkAndShowCollectionActionButton(true)
-            } else {
-                updateUIForNetworkAndShowCollectionActionButton(false)
-            }
-        }
-    }
     var insertIndexPath = [IndexPath]()
     var deleteIndexPath = [IndexPath]()
     var updateIndexPath = [IndexPath]()
+    var messageToDisplay: String = Constants.AppStrings.EmptyCollectionView
     
     lazy var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = {
         let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "PhotoInfo")
@@ -61,6 +52,8 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     func subscribeToNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateUIFromSelector), name: Notification.Name(rawValue: Constants.AppStrings.DownloadComplete), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateAfterRotated(_:)), name: Notification.Name.UIDeviceOrientationDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(networkStatusChanged(_:)), name: .reachabilityChanged, object: reachability)
         do {
             try reachability.startNotifier()
@@ -72,10 +65,12 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
     func unsubscribeFromNotifications() {
         reachability.stopNotifier()
         NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name(rawValue: Constants.AppStrings.DownloadComplete), object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.UIDeviceOrientationDidChange, object: nil)
     }
     
-    
     @IBAction func showCollectionAction(_ sender: UIButton) {
+        messageToDisplay = Constants.AppStrings.CurrentlyDownloading
         updateUIForNetworkAndShowCollectionActionButton(false)
         for photoInfo in (self.fetchedResultsController.fetchedObjects)! {
             self.delegate.stack.context.delete(photoInfo as! PhotoInfo)
@@ -109,8 +104,9 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
         performFetchForFRC()
         mapView.delegate = self
         plotPinOnMapView()
-        setUpCollectionViewLayout(width: collectionView.bounds.size.width)
+        setUpCollectionViewLayout(width: view.bounds.size.width)
         subscribeToNotifications()
+        print("viewDidLoad")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -131,14 +127,15 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
             displayAlert(title: "FRC Failed", msg: "Unable to create Fetch Results Controller: \(err)")
         }
     }
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        setUpCollectionViewLayout(width: size.width)
+    
+    @objc func updateAfterRotated(_ notification: Notification) {
+        setUpCollectionViewLayout(width: view.bounds.size.width)
     }
     
     func setUpCollectionViewLayout(width: CGFloat) {
-        let space:CGFloat = 1.0
-        let dimension = floor((width - (2 * space)) / 3.0)
+        let space: CGFloat = 1.0
+        let numberAcross: CGFloat = UIDevice.current.orientation.isLandscape ? 6.0 : 3.0
+        let dimension = floor((width - ((numberAcross - 1) * space)) / numberAcross)
         flowLayout.minimumInteritemSpacing = space
         flowLayout.minimumLineSpacing = space
         flowLayout.itemSize = CGSize(width: dimension, height: dimension)
@@ -169,7 +166,7 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let objects = fetchedResultsController.sections![section].numberOfObjects
-        objects == 0 ? showEmptyView(true, message: Constants.AppStrings.EmptyCollectionView) : showEmptyView(false, message: Constants.AppStrings.BlankString)
+        objects == 0 ? showEmptyView(true, message: messageToDisplay) : showEmptyView(false, message: Constants.AppStrings.BlankString)
         return objects
     }
     
@@ -180,19 +177,12 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
             cell.imageView.image = nil
             cell.activityIndicator.startAnimating()
             cell.activityIndicator.isHidden = false
-            guard fetchingPhotoInfo.index(of: photoInfo) == nil else { return cell }
-            fetchingPhotoInfo.append(photoInfo)
             return cell
         }
-        
         cell.imageView.image = UIImage(data: photoInfo.imageData! as Data)
         cell.imageView.isHidden = false
         cell.activityIndicator.stopAnimating()
         cell.activityIndicator.isHidden = true
-        if fetchingPhotoInfo.count > 0 {
-            guard fetchingPhotoInfo.index(of: photoInfo) != nil else { return cell }
-            fetchingPhotoInfo.remove(at: fetchingPhotoInfo.index(of: photoInfo)!)
-        }
         return cell
     }
     
@@ -202,23 +192,6 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
         delegate.stack.save()
         return true
     }
-    
-    //    func fetchImageData(photoInfo: PhotoInfo, indexPath: IndexPath) {
-    //        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-    //        VirtualTouristClient.instance.downloadImageData(photoInfo: photoInfo) { (success, error) in
-    //            DispatchQueue.main.async {
-    //                self.fetchingPhotoInfo.remove(at: self.fetchingPhotoInfo.index(of: photoInfo)!)
-    //                UIApplication.shared.isNetworkActivityIndicatorVisible = false
-    //                if !success {
-    //                    self.displayAlert(title: "Error", msg: (error?.localizedDescription)!)
-    //                    self.delegate.stack.context.delete(photoInfo)
-    //                    self.delegate.stack.save()
-    //                    self.collectionView.deleteItems(at: [indexPath])
-    //                }
-    //                self.updateUIForShowCollectionActionButton(true)
-    //            }
-    //        }
-    //    }
     
     func showEmptyView(_ show: Bool, message: String) {
         if show {
@@ -243,6 +216,11 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
             pin!.pinTintColor = UIColor.red
         }
         return pin
+    }
+    
+    @objc func updateUIFromSelector() {
+        messageToDisplay = Constants.AppStrings.EmptyCollectionView
+        updateUIForNetworkAndShowCollectionActionButton(true)
     }
     
     func updateUIForNetworkAndShowCollectionActionButton(_ show: Bool) {

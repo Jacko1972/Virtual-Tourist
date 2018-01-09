@@ -42,7 +42,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         }
     }
     
+    @objc func updateUIFromSelector() {
+        DispatchQueue.main.async {
+            self.showDownloadBanner(false)
+        }
+    }
+    
     func subscribeToNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateUIFromSelector), name: Notification.Name(rawValue: Constants.AppStrings.DownloadComplete), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(networkStatusChanged(_:)), name: .reachabilityChanged, object: reachability)
         do {
             try reachability.startNotifier()
@@ -52,6 +59,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     }
     
     func unsubscribeFromNotifications() {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name(rawValue: Constants.AppStrings.DownloadComplete), object: nil)
         reachability.stopNotifier()
         NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
     }
@@ -102,11 +110,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         setMapFromUserDefaults()
         subscribeToNotifications()
         displayBannerLabel.isHidden = true
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -172,12 +175,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                 annotation.title = name
                 annotation.subtitle = pinDate
                 self.mapView.addAnnotation(annotation)
-                //                self.pointAnnotations.append(annotation)
                 let pin = Pin(latitude: newCoords.latitude, longitude: newCoords.longitude, name: name, pinDate: pinDate, context: self.delegate.stack.context)
                 self.delegate.stack.save()
                 VirtualTouristClient.instance.pin = pin
                 VirtualTouristClient.instance.fetchPhotoInfoInTheBackground()
-                self.showDownloadBanner(false)
             }
         }
     }
@@ -214,15 +215,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                     annotation.title = pin.name
                     annotation.subtitle = pin.pinDate
                     mapView.addAnnotation(annotation)
-                    //                    pointAnnotations.append(annotation)
                 }
             } else {
                 displayAlert(title: "No Pins Stored!", msg: "No Pins to display, long click on Map to create a Pin.")
             }
         }
-        //        if pointAnnotations.count > 0 {
-        //            mapView.addAnnotations(pointAnnotations)
-        //        }
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -249,13 +246,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         }
         return nil
     }
-    
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
         if segue.identifier == "ShowCollectionView", seguePin != nil {
             if let controller = segue.destination as? CollectionViewController {
                 controller.pin = seguePin

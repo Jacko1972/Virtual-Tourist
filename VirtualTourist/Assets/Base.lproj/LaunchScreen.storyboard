@@ -33,8 +33,8 @@
                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="© 2017 Andrew Jackson" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yt4-De-jAA">
-                                <rect key="frame" x="0.0" y="689.66666666666663" width="414" height="26.333333333333371"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="© 2018 Andrew Jackson" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yt4-De-jAA">
+                                <rect key="frame" x="80.333333333333329" y="689.66666666666663" width="253.66666666666669" height="26.333333333333371"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -48,12 +48,12 @@
                             <constraint firstItem="FsZ-r2-8aM" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="AxH-Gh-daW"/>
                             <constraint firstItem="Yt4-De-jAA" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="EoL-U5-MHV"/>
                             <constraint firstItem="UqP-7c-PHY" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Mdu-qC-TBc"/>
-                            <constraint firstItem="Yt4-De-jAA" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="N2H-Ud-NNt"/>
+                            <constraint firstItem="Yt4-De-jAA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="N2H-Ud-NNt"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Yt4-De-jAA" secondAttribute="bottom" constant="20" id="cIa-v7-gfJ">
                                 <variation key="heightClass=compact-widthClass=compact" constant="10"/>
                             </constraint>
                             <constraint firstItem="FsZ-r2-8aM" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="rBc-i9-X5A"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Yt4-De-jAA" secondAttribute="trailing" id="vEz-uc-ape"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Yt4-De-jAA" secondAttribute="trailing" id="vEz-uc-ape"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

@@ -26,8 +26,10 @@ class Constants {
 //    }
     
     struct AppStrings {
-        static let EmptyCollectionView = "No Images Available\nClick Back to select another Location!"
+        static let EmptyCollectionView = "No Images Available!\nClick Back to select another Location!"
         static let BlankString = "Blank Message"
+        static let DownloadComplete = "Download Complete"
+        static let CurrentlyDownloading = "Download In Progress...\nPlease Wait For New Collection."
     }
     
     // MARK: Flickr Data

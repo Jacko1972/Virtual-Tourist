@@ -42,7 +42,7 @@ class VirtualTouristClient {
     }
     
     func fetchPhotoInfoInTheBackground() {
-
+        
         let params = getDefaultParameters()
         let url = flickrURLFromParameters(params)
         let request = URLRequest(url: url)
@@ -94,10 +94,12 @@ class VirtualTouristClient {
             do {
                 let pagedPhotos = try JSONDecoder().decode(PagedPhotos.self, from: data)
                 if pagedPhotos.stat == Constants.FlickrResponseValues.OKStatus {
+                    var photoInfos = [PhotoInfo]()
                     for photo: Photo in pagedPhotos.photos.photo {
                         let photoInfo = PhotoInfo(photo: photo, pin: self.pin!, context: self.delegate.stack.context)
-                        self.downloadImageData(photoInfo: photoInfo)
+                        photoInfos.append(photoInfo)
                     }
+                    self.downloadImageData(photoInfos: photoInfos)
                 }
                 self.delegate.stack.save()
             } catch let error2 {
@@ -108,26 +110,31 @@ class VirtualTouristClient {
         task.resume()
     }
     
-    func downloadImageData(photoInfo: PhotoInfo) {
+    func downloadImageData(photoInfos: [PhotoInfo]) {
         print("downloadImageData In the background")
-        let url = URL(string: photoInfo.url!)
-        let request = URLRequest(url: url!)
-        let session = URLSession.shared
-        
-        let task = session.dataTask(with: request) { data, response, error in
-            if error != nil {
-                return
+        for photoInfo in photoInfos {
+            let url = URL(string: photoInfo.url!)
+            let request = URLRequest(url: url!)
+            let session = URLSession.shared
+            
+            let task = session.dataTask(with: request) { data, response, error in
+                if error != nil {
+                    return
+                }
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                    return
+                }
+                guard let data = data else {
+                    return
+                }
+                photoInfo.imageData = data as NSData
+                self.delegate.stack.save()
+                if photoInfo == photoInfos.last {
+                    NotificationCenter.default.post(name: Notification.Name(Constants.AppStrings.DownloadComplete), object: nil)
+                }
             }
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-                return
-            }
-            guard let data = data else {
-                return
-            }
-            photoInfo.imageData = data as NSData
-            self.delegate.stack.save()
+            task.resume()
         }
-        task.resume()
     }
     
     func downloadImageData(photoInfo: PhotoInfo, handler: @escaping (_ downloaded: Bool, _ error: Error?) -> Void) {
@@ -209,9 +216,8 @@ class VirtualTouristClient {
     func fetchPhotos(_ pages: Int, handler: @escaping (_ success: Bool, _ error: Error?) -> Void) {
         print("fetchPhotos: \(pages)")
         var params = getDefaultParameters()
-        var extraParams = [String: Any]()
-        extraParams[Constants.FlickrParameterKeys.Page] = pages as Any
-        let url = flickrURLFromParameters(params, extraParams)
+        params[Constants.FlickrParameterKeys.Page] = pages as Any
+        let url = flickrURLFromParameters(params)
         print("\(url)")
         let request = URLRequest(url: url)
         let session = URLSession.shared
@@ -236,11 +242,12 @@ class VirtualTouristClient {
             do {
                 let pagedPhotos = try JSONDecoder().decode(PagedPhotos.self, from: data)
                 if pagedPhotos.stat == Constants.FlickrResponseValues.OKStatus {
+                    var photoInfos = [PhotoInfo]()
                     for photo: Photo in pagedPhotos.photos.photo {
                         let photoInfo = PhotoInfo(photo: photo, pin: self.pin!, context: self.delegate.stack.context)
-                        self.downloadImageData(photoInfo: photoInfo)
+                        photoInfos.append(photoInfo)
                     }
-                    self.delegate.stack.save()
+                    self.downloadImageData(photoInfos: photoInfos)
                     handler(true, nil)
                 } else {
                     sendError("Flickr Response was not OK: \(pagedPhotos.stat)")
@@ -281,24 +288,6 @@ class VirtualTouristClient {
             components.queryItems!.append(queryItem)
         }
         
-        return components.url!
-    }
-    
-    // Helper for creating a URL from parameters with extra parameters
-    private func flickrURLFromParameters(_ parameters: [String: Any], _ extraParams: [String: Any]) -> URL {
-        var components = URLComponents()
-        components.scheme = Constants.Flickr.ApiScheme
-        components.host = Constants.Flickr.ApiHost
-        components.path = Constants.Flickr.ApiPath
-        components.queryItems = [URLQueryItem]()
-        for (key, value) in parameters {
-            let queryItem = URLQueryItem(name: key, value: "\(value)")
-            components.queryItems!.append(queryItem)
-        }
-        for (key, value) in extraParams {
-            let queryItem = URLQueryItem(name: key, value: "\(value)")
-            components.queryItems!.append(queryItem)
-        }
         return components.url!
     }
     
