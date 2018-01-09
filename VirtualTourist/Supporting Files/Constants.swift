@@ -25,6 +25,11 @@ class Constants {
 //        }
 //    }
     
+    struct AppStrings {
+        static let EmptyCollectionView = "No Images Available\nClick Back to select another Location!"
+        static let BlankString = "Blank Message"
+    }
+    
     // MARK: Flickr Data
     struct Flickr {
         static let ApiScheme = "https"
@@ -58,7 +63,7 @@ class Constants {
         static let DisableJSONCallback = 1        /* 1 means "yes" */
         static let ImageURL = "url_q"
         static let UseSafeSearch = 1
-        static let PerPage = 20
+        static let PerPage = 21
     }
     
     // MARK: Flickr Response Values

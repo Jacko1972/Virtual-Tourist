@@ -12,13 +12,49 @@ import CoreData
 
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate {
     @IBOutlet var deleteButton: UIBarButtonItem!
-    
+    @IBOutlet var displayBannerLabel: UILabel!
     @IBOutlet var mapView: MKMapView!
+    
     let locationManager = CLLocationManager()
     let delegate = UIApplication.shared.delegate as! AppDelegate
-    var pointAnnotations = [MKPointAnnotation]()
+    let reachability = Reachability()!
     let defaults = UserDefaults.standard
     var seguePin: Pin!
+    
+    @objc func networkStatusChanged(_ notification: Notification) {
+        let reachability = notification.object as! Reachability
+        switch reachability.connection {
+        case .none:
+            allowInternetActions(false)
+        default:
+            allowInternetActions(true)
+        }
+    }
+    
+    func allowInternetActions(_ available: Bool) -> Void {
+        if available {
+            displayBannerLabel.isHidden = true
+        } else {
+            displayBannerLabel.isHidden = false
+            displayBannerLabel.text = "No Internet! No New Pins Allowed!"
+            displayBannerLabel.backgroundColor = UIColor.red
+            displayBannerLabel.textColor = UIColor.white
+        }
+    }
+    
+    func subscribeToNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(networkStatusChanged(_:)), name: .reachabilityChanged, object: reachability)
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("could not start reachability notifier")
+        }
+    }
+    
+    func unsubscribeFromNotifications() {
+        reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
+    }
     
     @IBAction func deletePinAction(_ sender: UIBarButtonItem) {
         let ann = mapView.selectedAnnotations[0]
@@ -32,7 +68,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             delegate.stack.save()
         }
         mapView.removeAnnotation(ann)
-        displayAlert(title: "Pin Removed", msg: "And there it was, gone!!")
+        displayAlert(title: "Pin Removed", msg: "Pin along with its associated images have been removed!")
         deleteButton.isEnabled = false
     }
     
@@ -64,6 +100,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         mapView.removeAnnotations(mapView.annotations)
         checkLocationAuthorizationStatus()
         setMapFromUserDefaults()
+        subscribeToNotifications()
+        displayBannerLabel.isHidden = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -92,18 +130,31 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         deleteButton.isEnabled = false
     }
     
+    func showDownloadBanner(_ show: Bool) {
+        displayBannerLabel.text = "Downloading..."
+        displayBannerLabel.textColor = UIColor.white
+        displayBannerLabel.backgroundColor = UIColor.green
+        displayBannerLabel.isHidden = !show
+    }
+    
     @objc func addAnnotationAction(gestureRecognizer:UIGestureRecognizer) {
+        if reachability.connection == .none {
+            return
+        }
         if gestureRecognizer.state == .began {
+            showDownloadBanner(true)
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
             let touchPoint = gestureRecognizer.location(in: mapView)
             let newCoords = mapView.convert(touchPoint, toCoordinateFrom: mapView)
             VirtualTouristClient.instance.getLocalSearchLocationFromCoordinates(newCoords) { (response, error) in
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 if error != nil {
+                    self.showDownloadBanner(false)
                     self.displayAlert(title: "Could Not Find Name", msg: "Geocoder could not find a name for dropped pin location.")
                     return
                 }
                 guard let resp = response else {
+                    self.showDownloadBanner(false)
                     self.displayAlert(title: "Missing Locations", msg: "We were unable to find a location name.")
                     return
                 }
@@ -121,12 +172,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                 annotation.title = name
                 annotation.subtitle = pinDate
                 self.mapView.addAnnotation(annotation)
-                self.pointAnnotations.append(annotation)
+                //                self.pointAnnotations.append(annotation)
                 let pin = Pin(latitude: newCoords.latitude, longitude: newCoords.longitude, name: name, pinDate: pinDate, context: self.delegate.stack.context)
                 self.delegate.stack.save()
                 VirtualTouristClient.instance.pin = pin
                 VirtualTouristClient.instance.fetchPhotoInfoInTheBackground()
-                print(pin)
+                self.showDownloadBanner(false)
             }
         }
     }
@@ -162,15 +213,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                     annotation.coordinate = location
                     annotation.title = pin.name
                     annotation.subtitle = pin.pinDate
-                    pointAnnotations.append(annotation)
+                    mapView.addAnnotation(annotation)
+                    //                    pointAnnotations.append(annotation)
                 }
             } else {
                 displayAlert(title: "No Pins Stored!", msg: "No Pins to display, long click on Map to create a Pin.")
             }
         }
-        if pointAnnotations.count > 0 {
-            mapView.addAnnotations(pointAnnotations)
-        }
+        //        if pointAnnotations.count > 0 {
+        //            mapView.addAnnotations(pointAnnotations)
+        //        }
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {

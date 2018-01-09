@@ -42,29 +42,29 @@ class VirtualTouristClient {
     }
     
     func fetchPhotoInfoInTheBackground() {
-        
+
         let params = getDefaultParameters()
         let url = flickrURLFromParameters(params)
         let request = URLRequest(url: url)
         let session = URLSession.shared
         
-        let task = session.dataTask(with: request) { data, response, error in
-            if error != nil {
+        let task = session.dataTask(with: request) { data, response, error2 in
+            if error2 != nil {
                 return
             }
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
                 return
             }
-            guard let data = data else {
+            guard let myData = data else {
                 return
             }
             do {
-                let photos = try JSONDecoder().decode(Photos.self, from: data)
-                if photos.stat == Constants.FlickrResponseValues.OKStatus {
-                    guard let pages = UInt32(photos.pages) else {
+                let pagedPhotos = try JSONDecoder().decode(PagedPhotos.self, from: myData)
+                if pagedPhotos.stat == Constants.FlickrResponseValues.OKStatus {
+                    if pagedPhotos.photos.pages == 0 {
                         return
                     }
-                    self.fetchPhotosInTheBackground(Int(arc4random_uniform(pages)) + 1)
+                    self.fetchPhotosInTheBackground(Int(arc4random_uniform(UInt32(pagedPhotos.photos.pages))) + 1)
                 }
             } catch {
                 return
@@ -74,6 +74,7 @@ class VirtualTouristClient {
     }
     
     private func fetchPhotosInTheBackground(_ pages: Int) {
+        print("fetchPhotos In the background: \(pages)")
         var params = getDefaultParameters()
         params[Constants.FlickrParameterKeys.Page] = pages as Any
         let url = flickrURLFromParameters(params)
@@ -91,15 +92,16 @@ class VirtualTouristClient {
                 return
             }
             do {
-                let photos = try JSONDecoder().decode(Photos.self, from: data)
-                if photos.stat == Constants.FlickrResponseValues.OKStatus {
-                    for photo: Photo in photos.photo {
+                let pagedPhotos = try JSONDecoder().decode(PagedPhotos.self, from: data)
+                if pagedPhotos.stat == Constants.FlickrResponseValues.OKStatus {
+                    for photo: Photo in pagedPhotos.photos.photo {
                         let photoInfo = PhotoInfo(photo: photo, pin: self.pin!, context: self.delegate.stack.context)
                         self.downloadImageData(photoInfo: photoInfo)
                     }
                 }
                 self.delegate.stack.save()
-            } catch {
+            } catch let error2 {
+                print("error 4 \(error2)")
                 return
             }
         }
@@ -107,6 +109,7 @@ class VirtualTouristClient {
     }
     
     func downloadImageData(photoInfo: PhotoInfo) {
+        print("downloadImageData In the background")
         let url = URL(string: photoInfo.url!)
         let request = URLRequest(url: url!)
         let session = URLSession.shared
@@ -122,6 +125,130 @@ class VirtualTouristClient {
                 return
             }
             photoInfo.imageData = data as NSData
+            self.delegate.stack.save()
+        }
+        task.resume()
+    }
+    
+    func downloadImageData(photoInfo: PhotoInfo, handler: @escaping (_ downloaded: Bool, _ error: Error?) -> Void) {
+        let url = URL(string: photoInfo.url!)
+        let request = URLRequest(url: url!)
+        let session = URLSession.shared
+        
+        if photoInfo.imageData != nil {
+            print("not null")
+            handler(true, nil)
+            return
+        }
+        
+        let task = session.dataTask(with: request) { data, response, error in
+            func sendError(_ error: String) {
+                let userInfo = [NSLocalizedDescriptionKey : error]
+                handler(false, NSError(domain: "Image Data Download", code: 1, userInfo: userInfo))
+            }
+            if error != nil {
+                sendError("Download Task returned with: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                sendError("Download Status Code: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            guard let data = data else {
+                sendError("Download returned no Data!")
+                return
+            }
+            photoInfo.imageData = data as NSData
+            self.delegate.stack.save()
+            handler(true, nil)
+        }
+        task.resume()
+    }
+    
+    func fetchPhotoInfo(handler: @escaping (_ pages: Int, _ error: Error?) -> Void) {
+        let params = getDefaultParameters()
+        let url = flickrURLFromParameters(params)
+        let request = URLRequest(url: url)
+        let session = URLSession.shared
+        
+        let task = session.dataTask(with: request) { data, response, error in
+            func sendError(_ error: String) {
+                let userInfo = [NSLocalizedDescriptionKey : error]
+                handler(0, NSError(domain: "Image Info Download", code: 1, userInfo: userInfo))
+            }
+            if error != nil {
+                sendError("Could not fetch Photo Info: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                sendError("Download Status Code: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            guard let myData = data else {
+                sendError("Download returned no Data!")
+                return
+            }
+            do {
+                let pagedPhotos = try JSONDecoder().decode(PagedPhotos.self, from: myData)
+                if pagedPhotos.stat == Constants.FlickrResponseValues.OKStatus {
+                    if pagedPhotos.photos.pages == 0 {
+                        sendError("No Photos for the chosen location!")
+                        return
+                    }
+                    let pageLimit = min(pagedPhotos.photos.pages, 175) // For some reason any page number above 190 (approx) returns the default first page!!!!
+                    let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+                    handler(randomPage, nil)
+                }
+            } catch {
+                return
+            }
+        }
+        task.resume()
+    }
+    
+    func fetchPhotos(_ pages: Int, handler: @escaping (_ success: Bool, _ error: Error?) -> Void) {
+        print("fetchPhotos: \(pages)")
+        var params = getDefaultParameters()
+        var extraParams = [String: Any]()
+        extraParams[Constants.FlickrParameterKeys.Page] = pages as Any
+        let url = flickrURLFromParameters(params, extraParams)
+        print("\(url)")
+        let request = URLRequest(url: url)
+        let session = URLSession.shared
+        
+        let task = session.dataTask(with: request) { data, response, error in
+            func sendError(_ error: String) {
+                let userInfo = [NSLocalizedDescriptionKey : error]
+                handler(false, NSError(domain: "Photo Download", code: 1, userInfo: userInfo))
+            }
+            if error != nil {
+                sendError("Could not fetch Photos: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                sendError("Photo Download Status Code: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            guard let data = data else {
+                sendError("Photo Download returned no Data!")
+                return
+            }
+            do {
+                let pagedPhotos = try JSONDecoder().decode(PagedPhotos.self, from: data)
+                if pagedPhotos.stat == Constants.FlickrResponseValues.OKStatus {
+                    for photo: Photo in pagedPhotos.photos.photo {
+                        let photoInfo = PhotoInfo(photo: photo, pin: self.pin!, context: self.delegate.stack.context)
+                        self.downloadImageData(photoInfo: photoInfo)
+                    }
+                    self.delegate.stack.save()
+                    handler(true, nil)
+                } else {
+                    sendError("Flickr Response was not OK: \(pagedPhotos.stat)")
+                    return
+                }
+            } catch {
+                return
+            }
         }
         task.resume()
     }
@@ -154,6 +281,24 @@ class VirtualTouristClient {
             components.queryItems!.append(queryItem)
         }
         
+        return components.url!
+    }
+    
+    // Helper for creating a URL from parameters with extra parameters
+    private func flickrURLFromParameters(_ parameters: [String: Any], _ extraParams: [String: Any]) -> URL {
+        var components = URLComponents()
+        components.scheme = Constants.Flickr.ApiScheme
+        components.host = Constants.Flickr.ApiHost
+        components.path = Constants.Flickr.ApiPath
+        components.queryItems = [URLQueryItem]()
+        for (key, value) in parameters {
+            let queryItem = URLQueryItem(name: key, value: "\(value)")
+            components.queryItems!.append(queryItem)
+        }
+        for (key, value) in extraParams {
+            let queryItem = URLQueryItem(name: key, value: "\(value)")
+            components.queryItems!.append(queryItem)
+        }
         return components.url!
     }
     
