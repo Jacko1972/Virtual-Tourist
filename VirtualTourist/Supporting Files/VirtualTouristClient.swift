@@ -134,41 +134,6 @@ class VirtualTouristClient {
         }
     }
     
-//    func downloadImageData(photoInfo: PhotoInfo, handler: @escaping (_ downloaded: Bool, _ error: Error?) -> Void) {
-//        let url = URL(string: photoInfo.url!)
-//        let request = URLRequest(url: url!)
-//        let session = URLSession.shared
-//
-//        if photoInfo.imageData != nil {
-//            print("not null")
-//            handler(true, nil)
-//            return
-//        }
-//
-//        let task = session.dataTask(with: request) { data, response, error in
-//            func sendError(_ error: String) {
-//                let userInfo = [NSLocalizedDescriptionKey : error]
-//                handler(false, NSError(domain: "Image Data Download", code: 1, userInfo: userInfo))
-//            }
-//            if error != nil {
-//                sendError("Download Task returned with: \(String(describing: error?.localizedDescription))")
-//                return
-//            }
-//            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-//                sendError("Download Status Code: \(String(describing: error?.localizedDescription))")
-//                return
-//            }
-//            guard let data = data else {
-//                sendError("Download returned no Data!")
-//                return
-//            }
-//            photoInfo.imageData = data as NSData
-//            self.delegate.stack.save()
-//            handler(true, nil)
-//        }
-//        task.resume()
-//    }
-    
     func fetchPhotoInfo(handler: @escaping (_ pages: Int, _ error: Error?) -> Void) {
         let params = getDefaultParameters()
         let url = flickrURLFromParameters(params)
@@ -289,13 +254,17 @@ class VirtualTouristClient {
     // Helper for creating Flickr bbox parameter
     private func bboxString() -> String {
         // ensure bbox is bounded by minimum and maximums
-        guard let pin = pin else {
-            return "0,0,0,0"
+        var bbox: String = "0,0,0,0"
+        DispatchQueue.main.async { // Ensure calls to Core Data are thread safe
+            guard let pin = self.pin else {
+                return
+            }
+            let minimumLon = max(pin.longitude - Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.0)
+            let minimumLat = max(pin.latitude - Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.0)
+            let maximumLon = min(pin.longitude + Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.1)
+            let maximumLat = min(pin.latitude + Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.1)
+            bbox = "\(minimumLon),\(minimumLat),\(maximumLon),\(maximumLat)"
         }
-        let minimumLon = max(pin.longitude - Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.0)
-        let minimumLat = max(pin.latitude - Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.0)
-        let maximumLon = min(pin.longitude + Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.1)
-        let maximumLat = min(pin.latitude + Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.1)
-        return "\(minimumLon),\(minimumLat),\(maximumLon),\(maximumLat)"
+        return bbox
     }
 }

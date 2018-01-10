@@ -15,6 +15,7 @@ class Constants {
         static let BlankString = "Blank Message"
         static let DownloadComplete = "Download Complete"
         static let CurrentlyDownloading = "Download In Progress...\nPlease Wait For New Collection."
+        static let NoInternet = "No Internet! No New Pins Allowed!"
     }
     
     // MARK: Flickr Data
@@ -50,7 +51,7 @@ class Constants {
         static let DisableJSONCallback = 1        /* 1 means "yes" */
         static let ImageURL = "url_q"
         static let UseSafeSearch = 1
-        static let PerPage = 21
+        static let PerPage = 24
     }
     
     // MARK: Flickr Response Values

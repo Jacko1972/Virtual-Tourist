@@ -180,7 +180,6 @@ class CollectionViewController: UIViewController, UICollectionViewDelegate, UICo
         cell.imageView.image = UIImage(data: photoInfo.imageData! as Data)
         cell.imageView.isHidden = false
         cell.activityIndicator.stopAnimating()
-        cell.activityIndicator.isHidden = true
         return cell
     }
     

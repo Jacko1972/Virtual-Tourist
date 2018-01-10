@@ -35,7 +35,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             displayBannerLabel.isHidden = true
         } else {
             displayBannerLabel.isHidden = false
-            displayBannerLabel.text = "No Internet! No New Pins Allowed!"
+            displayBannerLabel.text = Constants.AppStrings.NoInternet
             displayBannerLabel.backgroundColor = UIColor.red
             displayBannerLabel.textColor = UIColor.white
         }
@@ -98,7 +98,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         super.viewDidLoad()
         mapView.delegate = self
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(addAnnotationAction(gestureRecognizer:)))
-        longPress.minimumPressDuration = 1.5
+        longPress.minimumPressDuration = 0.5
         mapView.addGestureRecognizer(longPress)
     }
     
